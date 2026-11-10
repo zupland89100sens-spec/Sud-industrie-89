@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUD Industrie — Vidéo explicative</title>
+<style>
+:root{--bg:#0f0f13;--panel:#1a1a22;--panel2:#22222e;--border:#2e2e3e;--ink:#e8e8f0;--dim:#8888a0;--ok:#2d8a4e;--err:#c0392b;--warn:#d4a017;--red:#c41e3a;--blue:#4a6cf7}
+*{box-sizing:border-box}
+body{margin:0 auto;max-width:720px;padding:1.2rem 1rem 4rem;background:var(--bg);color:var(--ink);font-family:-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.5}
+h1{margin:0 0 1rem;text-align:center;font-size:1.4rem;background:linear-gradient(135deg,var(--red),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{margin:0 0 .6rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:1rem}
+.lbl{display:block;margin:.7rem 0 .3rem;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);font-weight:700}
+input,textarea,select{width:100%;padding:.7rem .8rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:140px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.styles{display:grid;grid-template-columns:repeat(2,1fr);gap:.45rem}
+.style{padding:.6rem;border-radius:8px;border:1px solid var(--border);background:var(--panel2);text-align:center;cursor:pointer;font-size:.85rem}
+.style.sel{background:var(--red);border-color:var(--red);color:#fff}
+button{font:inherit;cursor:pointer}
+.btn{width:100%;margin:.6rem 0;padding:1rem;border:0;border-radius:12px;background:linear-gradient(135deg,var(--red),var(--blue));color:#fff;font-weight:700;font-size:1rem}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn2{padding:.6rem .9rem;border:1px solid var(--border);border-radius:8px;background:var(--panel2);color:var(--ink)}
+.btn2:disabled{opacity:.4}
+.stop{width:100%;padding:.7rem;border:1px solid var(--err);border-radius:12px;background:transparent;color:var(--err);display:none;margin-bottom:1rem}
+.stop.on{display:block}
+.status{text-align:center;color:var(--dim);font-size:.85rem;min-height:1.2em;margin:.3rem 0 .8rem}
+.test-result{margin-top:.6rem;font-size:.85rem;padding:.6rem .8rem;border-radius:8px;background:var(--panel2);display:none;white-space:pre-wrap}
+.test-result.ok{display:block;color:var(--ok)}
+.test-result.ko{display:block;color:var(--err)}
+.thumbs{display:flex;gap:.4rem;overflow-x:auto}
+.thumbs img{height:90px;border-radius:6px;flex-shrink:0}
+.clips{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.clip{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:.6rem;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:.82rem;gap:.35rem}
+.clip video{width:100%;border-radius:8px}
+.clip .n{color:var(--dim);font-size:.75rem}
+.clip .err{color:var(--err);font-size:.75rem;word-break:break-word}
+.bar{width:100%;height:6px;background:#000;border-radius:4px;overflow:hidden}
+.bar div{height:100%;width:100%;background:linear-gradient(90deg,var(--red),var(--blue));opacity:.5;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}
+.log{max-height:200px;overflow:auto;background:var(--bg);border-radius:8px;padding:.5rem;font:12px ui-monospace,monospace;color:var(--dim)}
+.log .e{color:var(--err)}.log .o{color:var(--ok)}.log .w{color:var(--warn)}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<h1>SUD Industrie — Vidéo explicative</h1>
+
+<div class="card">
+  <h2>Clé API Agnès</h2>
+  <input id="api-key" type="password" placeholder="Votre clé API">
+  <button class="btn2" id="save-key" style="margin-top:.5rem;width:100%">Enregistrer la clé</button>
+  <button class="btn2" id="test-conn" style="margin-top:.5rem;width:100%">Tester la connexion</button>
+  <div class="test-result" id="test-result"></div>
+</div>
+
+<div class="card">
+  <h2>Points à expliquer</h2>
+  <textarea id="script">Explique les trois points essentiels du Code du travail pour les salariés de l'industrie :
+
+1. L'employeur doit garantir la sécurité et la santé physique et mentale des travailleurs (article L4121-1). Il doit évaluer les risques, former les salariés, et consigner le tout dans le DUERP.
+
+2. Tout salarié confronté à un danger grave et imminent a le droit de se retirer de la situation sans être sanctionné (droit de retrait, article L4131-1).
+
+3. La durée légale du travail est de 35 heures par semaine. Les heures supplémentaires donnent droit à une majoration ou à un repos compensateur.</textarea>
+
+  <span class="lbl">Style visuel</span>
+  <div class="styles" id="styles"></div>
+
+  <div class="row">
+    <div>
+      <span class="lbl">Nombre de scènes</span>
+      <select id="scene-count">
+        <option value="3" selected>3 scènes</option>
+        <option value="5">5 scènes</option>
+      </select>
+    </div>
+    <div>
+      <span class="lbl">Durée par clip</span>
+      <select id="clip-duration">
+        <option value="5" selected>5 secondes</option>
+        <option value="10">10 secondes</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn" id="generate" disabled>Ajoutez votre clé API</button>
+</div>
+
+<button class="stop" id="stop">Arrêter après l'étape en cours</button>
+<div class="status" id="status"></div>
+
+<div class="card hidden" id="sec-images">
+  <h2>Images</h2>
+  <div class="thumbs" id="thumbs"></div>
+</div>
+
+<div class="card hidden" id="sec-clips">
+  <h2>Clips vidéo</h2>
+  <div class="clips" id="clips"></div>
+</div>
+
+<div class="card">
+  <h2>Journal</h2>
+  <div class="log" id="log"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// CONFIGURATION (mêmes adresses et modèles que ton application)
+// ══════════════════════════════════════════════════════════════
+const API_BASE = 'https://apihub.agnes-ai.com/v1';
+const POLL_BASE = 'https://apihub.agnes-ai.com/agnesapi';
+const MODEL_TEXT = 'agnes-2.5-flash';
+const MODEL_IMAGE = 'agnes-image-2.5-flash';
+const MODEL_VIDEO = 'agnes-video-2.5-flash';
+const POLL_EVERY_MS = 5000;
+const MAX_POLLS = 300;
+const QUEUE_WAIT_MAX_MS = 15 * 60 * 1000;
+
+const STYLES = [
+  { id: 'militant', name: 'Militant réaliste', prompt: 'Documentary-style realistic footage of French industrial workers in a factory, natural lighting, handheld camera, union meeting atmosphere, diverse workers in work clothes, serious expressions' },
+  { id: 'affiche', name: 'Affiche syndicale', prompt: 'Bold graphic poster style inspired by French union protest art, high contrast red black and cream, silhouettes of workers, screenprint texture' },
+  { id: 'bd', name: 'BD réaliste', prompt: 'Realistic Franco-Belgian comic book style, clean ink lines, muted industrial palette, workers in a factory setting' },
+  { id: 'photo-nb', name: 'Photo N&B', prompt: 'Black and white documentary photography, high contrast, grainy 35mm film look, industrial workers, reportage aesthetic' },
+  { id: 'animation', name: 'Animation simple', prompt: 'Clean 2D vector animation, flat colors red and dark blue, simple geometric shapes, clear and educational' }
+];
+
+const state = { style: STYLES[0], running: false, stop: false, images: [], clips: [] };
+
+// ══════════════════════════════════════════════════════════════
+// OUTILS
+// ══════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+async function waitOrStop(ms) {
+  const end = Date.now() + ms;
+  while (Date.now() < end && !state.stop) await sleep(Math.min(1000, end - Date.now()));
+}
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function fmt(s) { s = Math.max(0, Math.round(s)); return s >= 60 ? Math.floor(s / 60) + 'min ' + (s % 60) + 's' : s + 's'; }
+function log(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = { error: 'e', success: 'o', warn: 'w' }[type] || '';
+  el.textContent = new Date().toLocaleTimeString('fr-FR') + ' ' + msg;
+  $('log').appendChild(el);
+  $('log').scrollTop = $('log').scrollHeight;
+}
+function setStatus(t) { $('status').textContent = t || ''; }
+function key() { return (localStorage.getItem('agnes_key') || '').trim(); }
+function headers() { return { 'Authorization': 'Bearer ' + key(), 'Content-Type': 'application/json' }; }
+
+// Traduit les erreurs techniques du navigateur en messages compréhensibles
+function explain(e) {
+  const m = String(e && e.message || e);
+  if (/Load failed|Failed to fetch|NetworkError|network/i.test(m))
+    return 'connexion impossible vers Agnès (réseau, VPN ou bloqueur)';
+  if (/délai dépassé/i.test(m)) return 'le serveur met trop de temps à répondre';
+  if (/clone/i.test(m)) return 'erreur du navigateur, réessaie';
+  return m;
+}
+
+// Délai d'attente sans AbortController
+function withTimeout(promise, ms) {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error('délai dépassé')), ms);
+    promise.then(v => { clearTimeout(t); resolve(v); }, e => { clearTimeout(t); reject(e); });
+  });
+}
+
+// Requête avec réessais pour les erreurs réseau et serveur
+async function request(url, opts, label, retries = 3) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    if (state.stop) throw new Error('Arrêt demandé');
+    try {
+      const res = await withTimeout(fetch(url, opts), 120000);
+      if ([500, 502, 503, 520].includes(res.status) && attempt < retries) {
+        const wait = 4000 * Math.pow(2, attempt);
+        log(label + ' : serveur HTTP ' + res.status + ', nouvel essai dans ' + fmt(wait / 1000), 'warn');
+        await waitOrStop(wait);
+        continue;
+      }
+      if (res.status === 429 && attempt < retries) {
+        log(label + ' : trop de requêtes, pause de 65 s', 'warn');
+        await waitOrStop(65000);
+        continue;
+      }
+      return res;
+    } catch (e) {
+      if (state.stop) throw new Error('Arrêt demandé');
+      if (attempt < retries) {
+        log(label + ' : ' + explain(e) + ', nouvel essai…', 'warn');
+        await waitOrStop(3000 * Math.pow(2, attempt));
+        continue;
+      }
+      throw new Error(label + ' : ' + explain(e));
+    }
+  }
+  throw new Error(label + ' : échec');
+}
+
+function parseJson(text) {
+  let c = String(text || '').trim();
+  const m = c.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (m) c = m[1].trim();
+  const a = c.indexOf('{'), b = c.lastIndexOf('}');
+  if (a >= 0 && b > a) c = c.slice(a, b + 1);
+  try { return JSON.parse(c); } catch (e) { return null; }
+}
+
+// ══════════════════════════════════════════════════════════════
+// APPELS API
+// ══════════════════════════════════════════════════════════════
+async function callText(messages) {
+  const res = await request(API_BASE + '/chat/completions', {
+    method: 'POST', headers: headers(),
+    body: JSON.stringify({ model: MODEL_TEXT, messages, temperature: 0.7, max_tokens: 2500 })
+  }, 'Texte');
+  if (!res.ok) throw new Error('Texte : erreur HTTP ' + res.status + ' (vérifie la clé API)');
+  const data = await res.json();
+  const content = data.choices?.[0]?.message?.content;
+  if (!content) throw new Error('Texte : réponse vide');
+  return content;
+}
+
+async function callImage(prompt) {
+  const res = await request(API_BASE + '/images/generations', {
+    method: 'POST', headers: headers(),
+    body: JSON.stringify({ model: MODEL_IMAGE, prompt, size: '768x1024', extra_body: { response_format: 'url' } })
+  }, 'Image');
+  if (!res.ok) throw new Error('Image : erreur HTTP ' + res.status);
+  const data = await res.json();
+  const item = data.data?.[0];
+  if (item?.url) return item.url;
+  if (item?.b64_json) return 'data:image/png;base64,' + item.b64_json;
+  throw new Error('Image : aucune image renvoyée');
+}
+
+// Création d'une vidéo, avec attente si la file est pleine
+async function createVideo(clip) {
+  const start = Date.now();
+  let delay = 15000;
+  const body = {
+    model: MODEL_VIDEO, prompt: clip.prompt,
+    seconds: String(clip.seconds), mode: 'keyframe',
+    first_frame: clip.first, last_frame: clip.last,
+    size: '720P', aspect_ratio: '9:16'
+  };
+  while (true) {
+    if (state.stop) throw new Error('Arrêt demandé');
+    const res = await request(API_BASE + '/videos', { method: 'POST', headers: headers(), body: JSON.stringify(body) }, 'Vidéo', 1);
+    if (res.ok) {
+      const d = await res.json();
+      if (!d.video_id) throw new Error('Vidéo : pas d\'identifiant renvoyé');
+      return d.video_id;
+    }
+    const txt = await res.text();
+    const busy = res.status === 503 || res.status === 429 || /queue/i.test(txt);
+    if (busy && Date.now() - start < QUEUE_WAIT_MAX_MS) {
+      clip.note = 'File pleine, nouvel essai dans ' + fmt(delay / 1000);
+      render(clip.index);
+      log('Clip ' + (clip.index + 1) + ' : file pleine, nouvel essai dans ' + fmt(delay / 1000), 'warn');
+      await waitOrStop(delay);
+      delay = Math.min(delay * 1.5, 60000);
+      continue;
+    }
+    throw new Error('Vidéo : HTTP ' + res.status + ' ' + txt.slice(0, 120));
+  }
+}
+
+// Suivi du statut jusqu'à la vidéo finale
+async function pollVideo(clip) {
+  const bases = [API_BASE + '/videos/', POLL_BASE + '/videos/'];
+  let base = bases[0];
+  for (let n = 0; n < MAX_POLLS; n++) {
+    await waitOrStop(POLL_EVERY_MS);
+    if (state.stop) throw new Error('Arrêt demandé');
+    clip.elapsed = (Date.now() - clip.startedAt) / 1000;
+    render(clip.index);
+    let res;
+    try {
+      res = await fetch(base + encodeURIComponent(clip.videoId), { headers: { 'Authorization': 'Bearer ' + key() } });
+    } catch (e) { continue; }
+    if (res.status === 404 && base === bases[0]) { base = bases[1]; continue; }
+    if (res.status === 401 || res.status === 403) throw new Error('Suivi refusé (HTTP ' + res.status + '), vérifie la clé API');
+    if (!res.ok) continue;
+    const d = await res.json();
+    const st = String(d.status || '').toLowerCase();
+    if (['completed', 'succeeded', 'done', 'success'].includes(st)) {
+      const url = d.output?.url || d.url || d.video_url;
+      if (!url) throw new Error('Clip terminé sans lien vidéo');
+      return url;
+    }
+    if (['failed', 'error', 'cancelled'].includes(st))
+      throw new Error('Échec côté serveur (' + st + ')' + (d.error?.message ? ' : ' + d.error.message : ''));
+  }
+  throw new Error('Délai maximal dépassé');
+}
+
+// ══════════════════════════════════════════════════════════════
+// AFFICHAGE DES CLIPS
+// ══════════════════════════════════════════════════════════════
+function renderClipsSkeleton() {
+  $('clips').innerHTML = '';
+  state.clips.forEach((c, i) => {
+    const d = document.createElement('div');
+    d.className = 'clip'; d.id = 'clip-' + i;
+    $('clips').appendChild(d);
+    render(i);
+  });
+}
+function render(i) {
+  const el = $('clip-' + i), c = state.clips[i];
+  if (!el || !c) return;
+  const head = '<div class="n">Clip ' + (i + 1) + ' / ' + state.clips.length + '</div>';
+  if (c.status === 'done') {
+    el.innerHTML = head + '<video src="' + esc(c.url) + '" controls playsinline preload="metadata"></video>';
+  } else if (c.status === 'failed') {
+    el.innerHTML = head + '<div><b>Échec</b></div><div class="err">' + esc(c.error) + '</div>' +
+      '<button class="btn2" onclick="retryClip(' + i + ')"' + (state.running ? ' disabled' : '') + '>Relancer ce clip</button>';
+  } else if (c.status === 'running') {
+    el.innerHTML = head + '<div>' + esc((c.note || 'Génération en cours') + (c.elapsed ? ' · ' + fmt(c.elapsed) : '')) + '</div><div class="bar"><div></div></div>';
+  } else {
+    el.innerHTML = head + '<div>En attente</div>';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// CLIP : CRÉATION + SUIVI
+// ══════════════════════════════════════════════════════════════
+async function runClip(i) {
+  const c = state.clips[i];
+  c.status = 'running'; c.error = null; c.url = null; c.note = 'Envoi'; c.elapsed = 0;
+  c.startedAt = Date.now();
+  render(i);
+  try {
+    c.videoId = await createVideo(c);
+    c.note = 'Demande acceptée';
+    render(i);
+    c.url = await pollVideo(c);
+    c.status = 'done';
+    log('Clip ' + (i + 1) + ' prêt en ' + fmt((Date.now() - c.startedAt) / 1000), 'success');
+  } catch (e) {
+    c.status = 'failed';
+    c.error = explain(e);
+    log('Clip ' + (i + 1) + ' : ' + c.error, 'error');
+  }
+  render(i);
+}
+
+window.retryClip = async function (i) {
+  if (state.running) return;
+  state.running = true; state.stop = false; updateButtons();
+  await runClip(i);
+  state.running = false; updateButtons();
+};
+
+// ══════════════════════════════════════════════════════════════
+// PIPELINE
+// ══════════════════════════════════════════════════════════════
+async function runPipeline() {
+  if (state.running) return;
+  const script = $('script').value.trim();
+  const nScenes = parseInt($('scene-count').value, 10);
+  const seconds = parseInt($('clip-duration').value, 10);
+
+  state.running = true; state.stop = false; state.images = []; state.clips = [];
+  $('log').innerHTML = '';
+  $('thumbs').innerHTML = '';
+  $('clips').innerHTML = '';
+  $('sec-images').classList.add('hidden');
+  $('sec-clips').classList.add('hidden');
+  updateButtons();
+  log('Démarrage');
+
+  try {
+    // 1. Scénario
+    setStatus('Écriture du scénario…');
+    log('Scénario avec ' + MODEL_TEXT);
+    const stylePrompt = state.style.prompt;
+    const prompt = 'Tu es scénariste de contenu syndical pour SUD Industrie. Crée une vidéo de vulgarisation du Code du travail pour les salariés de l\'industrie.\n\n' +
+      'Points à expliquer :\n"' + script + '"\n\n' +
+      'Contraintes : style visuel = ' + stylePrompt + '. Ton direct et pédagogique, comme un collègue qui explique à un collègue. ' +
+      'Nombre de scènes : ' + nScenes + '. Chaque dialogue : 15 mots maximum, en français, prononcé par un délégué SUD.\n\n' +
+      'Réponds UNIQUEMENT en JSON valide, sans markdown :\n' +
+      '{"title":"Titre court","logline":"Résumé en une phrase","scenes":[{"scene_number":1,"description":"Description visuelle en français",' +
+      '"image_prompt":"English prompt, portrait 9:16, industrial workplace or union meeting","dialogue":{"character":"Délégué SUD","text":"Phrase courte"},"camera_movement":"slow zoom"}]}';
+    const scenario = parseJson(await callText([
+      { role: 'system', content: 'Tu réponds uniquement en JSON valide.' },
+      { role: 'user', content: prompt }
+    ]));
+    if (!scenario || !Array.isArray(scenario.scenes) || !scenario.scenes.length) throw new Error('Scénario : JSON invalide, relance la génération');
+    log('Scénario : « ' + (scenario.title || '') + ' »', 'success');
+
+    // 2. Images, une à une
+    $('sec-images').classList.remove('hidden');
+    for (let i = 0; i < scenario.scenes.length && !state.stop; i++) {
+      const scene = scenario.scenes[i];
+      setStatus('Image ' + (i + 1) + ' / ' + scenario.scenes.length + '…');
+      try {
+        const url = await callImage(scene.image_prompt + '. ' + stylePrompt + '. Portrait 9:16, no text.');
+        state.images.push({ url, scene });
+        const img = document.createElement('img'); img.src = url; $('thumbs').appendChild(img);
+        log('Image ' + (i + 1) + ' ✓', 'success');
+      } catch (e) {
+        log('Image ' + (i + 1) + ' : ' + explain(e), 'error');
+      }
+      await waitOrStop(1500);
+    }
+    if (state.images.length < 2) throw new Error('Il faut au moins 2 images pour créer les clips');
+    if (state.stop) throw new Error('Arrêt demandé');
+
+    // 3. Clips : chaque clip va de l'image i à l'image i+1, un à la fois
+    const pairs = state.images.length - 1;
+    state.clips = [];
+    for (let i = 0; i < pairs; i++) {
+      const a = state.images[i], b = state.images[i + 1];
+      const d = a.scene.dialogue || {};
+      state.clips.push({
+        index: i, scene: a.scene, first: a.url, last: b.url, seconds,
+        prompt: 'One continuous shot, smooth motion between first and last frame. Style: ' + stylePrompt +
+          '. Portrait 9:16. ' + (d.text ? 'Voice: ' + (d.character || 'Délégué SUD') + ' says "' + d.text + '". ' : '') +
+          'No text, no watermarks.',
+        status: 'pending', url: null, error: null, note: '', videoId: null, startedAt: 0, elapsed: 0
+      });
+    }
+    $('sec-clips').classList.remove('hidden');
+    renderClipsSkeleton();
+    $('sec-clips').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    for (let i = 0; i < state.clips.length && !state.stop; i++) {
+      setStatus('Clip ' + (i + 1) + ' / ' + state.clips.length + '…');
+      await runClip(i);
+      if (i < state.clips.length - 1) await waitOrStop(3000);
+    }
+    setStatus(state.stop ? 'Arrêté' : 'Terminé');
+  } catch (e) {
+    setStatus('');
+    log(explain(e), 'error');
+  } finally {
+    state.running = false;
+    updateButtons();
+    const ok = state.clips.filter(c => c.status === 'done').length;
+    if (state.clips.length) log(ok + ' / ' + state.clips.length + ' clip(s) prêt(s)', ok ? 'success' : 'error');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// TEST DE CONNEXION
+// ══════════════════════════════════════════════════════════════
+async function testConnection() {
+  const box = $('test-result');
+  box.className = 'test-result';
+  box.style.display = 'block';
+  box.textContent = 'Test en cours…';
+  if (!key()) { box.className = 'test-result ko'; box.textContent = 'Enregistre d\'abord ta clé API.'; return; }
+  try {
+    const res = await withTimeout(fetch(API_BASE + '/chat/completions', {
+      method: 'POST', headers: headers(),
+      body: JSON.stringify({ model: MODEL_TEXT, messages: [{ role: 'user', content: 'Réponds OK' }], max_tokens: 5 })
+    }), 60000);
+    const txt = await res.text();
+    if (res.ok) { box.className = 'test-result ok'; box.textContent = 'Connexion OK (HTTP ' + res.status + '). Tu peux lancer la génération.'; }
+    else { box.className = 'test-result ko'; box.textContent = 'Le serveur répond HTTP ' + res.status + ' : ' + txt.slice(0, 150); }
+  } catch (e) {
+    box.className = 'test-result ko';
+    box.textContent = 'Échec : ' + explain(e) + '\nEssaie un autre réseau (4G/Wi-Fi), coupe le VPN ou le bloqueur, puis reteste.';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// INTERFACE
+// ══════════════════════════════════════════════════════════════
+function updateButtons() {
+  const hasKey = !!key();
+  const hasScript = $('script').value.trim().length > 20;
+  $('generate').disabled = !hasKey || !hasScript || state.running;
+  $('generate').textContent = state.running ? 'Génération en cours…'
+    : !hasKey ? 'Ajoutez votre clé API'
+    : !hasScript ? 'Décrivez les points à expliquer'
+    : '🎬 Générer la vidéo explicative';
+  $('stop').classList.toggle('on', state.running);
+}
+
+(function init() {
+  STYLES.forEach((s, idx) => {
+    const d = document.createElement('div');
+    d.className = 'style' + (idx === 0 ? ' sel' : '');
+    d.textContent = s.name;
+    d.onclick = () => {
+      document.querySelectorAll('.style').forEach(x => x.classList.remove('sel'));
+      d.classList.add('sel');
+      state.style = s;
+    };
+    $('styles').appendChild(d);
+  });
+  $('api-key').value = key();
+  $('save-key').onclick = () => {
+    localStorage.setItem('agnes_key', $('api-key').value.trim());
+    log('Clé enregistrée', 'success');
+    updateButtons();
+  };
+  $('test-conn').onclick = testConnection;
+  $('script').addEventListener('input', updateButtons);
+  $('generate').onclick = runPipeline;
+  $('stop').onclick = () => { state.stop = true; setStatus('Arrêt demandé…'); };
+  updateButtons();
+})();
+</script>
+</body>
+</html>
